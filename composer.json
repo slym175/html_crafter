@@ -1,0 +1,17 @@
+{
+    "name": "read175/html_crafter",
+    "description": "html builder, html module, bootstrap",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Read175\\HtmlCrafter\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "read175",
+            "email": "thuyhu9876@gmail.com"
+        }
+    ],
+    "require": {}
+}

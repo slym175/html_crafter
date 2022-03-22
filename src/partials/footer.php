@@ -1,0 +1,4 @@
+
+<?= loadFooterAssets() ?>
+</body>
+</html>
