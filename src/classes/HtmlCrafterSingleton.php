@@ -23,6 +23,8 @@ class HtmlCrafterSingleton
      */
     protected function __construct()
     {
+        global $session;
+        $session = HtmlCrafterSession::getInstance();
     }
 
     /**
@@ -72,17 +74,23 @@ class HtmlCrafterSingleton
 
     protected static function loadConfigs()
     {
-        global $appConfig;
-        $config_dir_path = ROOT_FOLDER . '/src/configs';
-        $config_files = glob($config_dir_path . '/*.php');
-        if (isset($config_files) && is_array($config_files) && count($config_files)) {
-            foreach ($config_files as $key => $file) {
-                if (!is_file($file) || !file_exists($file)) continue;
+        global $appConfig, $session;
 
-                $info = pathinfo($file);
-                $info['file_content'] = self::fetchConfig($file);
-                $appConfig[$info['filename']] = $info['file_content'];
+        if(isset($session->appConfig) && $session->appConfig) {
+            $appConfig = $session->appConfig;
+        }else{
+            $config_dir_path = ROOT_FOLDER . '/src/configs';
+            $config_files = glob($config_dir_path . '/*.php');
+            if (isset($config_files) && is_array($config_files) && count($config_files)) {
+                foreach ($config_files as $key => $file) {
+                    if (!is_file($file) || !file_exists($file)) continue;
+
+                    $info = pathinfo($file);
+                    $info['file_content'] = self::fetchConfig($file);
+                    $appConfig[$info['filename']] = $info['file_content'];
+                }
             }
+            $session->appConfig = $appConfig;
         }
     }
 

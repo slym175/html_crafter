@@ -22,36 +22,49 @@ class HtmlCrafter extends HtmlCrafterSingleton
     protected static function loadViews()
     {
         $request = $_SERVER['REQUEST_URI'];
-        $view_dir_path = ROOT_FOLDER . '/src/pages';
+        $view_dir_path = ROOT_FOLDER . '/src/sites/site1/pages';
         $file = '';
-        if ($request == '/') {
-            $view_path = glob($view_dir_path . '/index.php');
-            if (isset($view_path[0]) && file_exists($view_path[0]) && is_file($view_path[0])) {
-                $file = $view_path[0];
-            } else {
-                $view_path = glob($view_dir_path . '/home.php');
-                if (isset($view_path[0]) && file_exists($view_path[0]) && is_file($view_path[0])) {
-                    $file = $view_path[0];
+        switch ($request) {
+            case '/';
+                if (file_exists($view_dir_path . '/index.php')) {
+                    $view_path = glob($view_dir_path . '/index.php');
                 }
-            }
-        } else {
-            $view_path = glob($view_dir_path . $request . '.php');
-            if (isset($view_path[0]) && file_exists($view_path[0]) && is_file($view_path[0])) {
-                $file = $view_path[0];
-            }
+                if(file_exists($view_dir_path . '/home.php')) {
+                    $view_path = glob($view_dir_path . '/home.php');
+                }
+                break;
+            case '/app-settings':
+                $view_path = glob(ROOT_FOLDER . '/src/sites/app-settings.php');
+                break;
+            default:
+                $view_path = glob($view_dir_path . $request . '.php');
         }
 
-        self::loadRouteView($request, function () use ($file){
+        if(isset($view_path[0]) && file_exists($view_path[0])) {
+            $file = $view_path[0];
+        }
+
+        self::loadRouteView($request, function () use ($file, $request){
             ob_start();
-            include_once ROOT_FOLDER . "/src/partials/header.php";
+            if($request == '/app-settings') {
+                include_once ROOT_FOLDER . "/src/sites/app-header.php";
+            }else{
+                include_once ROOT_FOLDER . "/src/sites/site1/partials/header.php";
+            }
+
             echo "<main class='app-main'>";
             if (!isset($file) || $file == '') {
+                echo $file;
                 echo "<div>Page Not Found - 404</div>";
             } else {
                 include_once $file;
             }
             echo "</main>";
-            include_once ROOT_FOLDER . "/src/partials/footer.php";
+            if($request == '/app-settings') {
+                include_once ROOT_FOLDER . "/src/sites/app-footer.php";
+            }else{
+                include_once ROOT_FOLDER . "/src/sites/site1/partials/footer.php";
+            }
             $content = ob_get_contents();
             ob_end_clean();
             return $content;
